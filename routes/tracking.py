@@ -14,35 +14,8 @@ def run(anchor, db) -> None:
         "username" : username,
     }
 
-    cd_e, tp_e, ss_e = anchor.columns(3, gap="small")
-    cs_e, tr_e, se_e = anchor.columns(3, gap="small")
-
-    st.markdown("""
-        <style>
-            [data-testid="column"]{
-                padding: 10px;
-            }
-            [data-testid="column"]:nth-child(1){
-                background-color: #e3b75f;
-            }
-            [data-testid="column"]:nth-child(2){
-                background-color: #36806b;
-            }
-            [data-testid="column"]:nth-child(3){
-                background-color: #8c4873;
-            }
-            [data-testid="stHorizontalBlock"] + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child(1){
-                background-color: #eb6a60;
-            }
-            [data-testid="stHorizontalBlock"] + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child(2){
-                background-color: #2261a1;
-            }
-            [data-testid="stHorizontalBlock"] + [data-testid="stHorizontalBlock"] [data-testid="column"]:nth-child(3){
-                background-color: #6d4585;
-            }
-        </style>
-        """, unsafe_allow_html=True
-    )
+    cd_e, tp_e, ss_e = anchor.columns(3, gap="large")
+    cs_e, tr_e, se_e = anchor.columns(3, gap="large")
 
     pasu_e = cd_e.number_input(label=f"Pasu Voltaic{suffix}", value=None)
     b180_e = cd_e.number_input(label=f"B180 Voltaic{suffix}", value=None)

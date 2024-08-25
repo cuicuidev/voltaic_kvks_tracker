@@ -2,17 +2,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import streamlit as st
 
-import datetime
 import os
-
 from dotenv import load_dotenv
-import plotly.express as px
-import plotly.graph_objects as go
-
-import pandas as pd
-
-from typing import Dict, Any, Optional
-
 from routes import tracking, progress
 
 class MongoDatabaseHandler:

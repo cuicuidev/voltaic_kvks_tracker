@@ -6,6 +6,15 @@ import streamlit as st
 def run(anchor, db) -> None:
     username = anchor.text_input(label="Username")
 
+    wrong_passwd = False
+    if username == "cuicui":
+        passwd = anchor.text_input(label="Password", type="password")
+        wrong_passwd = st.secrets["cuicui_passwd"] != passwd
+        print(passwd, st.secrets["cuicui_passwd"], wrong_passwd)
+
+    if wrong_passwd:
+        anchor.warning("Wrong password")
+
     level = anchor.selectbox(label="Difficuly", options=["Intermediate", "Advanced"])
     diffs = {"Intermediate" : " Easy", "Advanced" : ""}
     suffix = diffs[level]
@@ -95,5 +104,8 @@ def run(anchor, db) -> None:
         benchmark["kvks_sens"] = {"preset" : kvks_sens_type, "value" : kvks_sens}
         if mouse_curve != "Flat":
             benchmark["mouse_curve"] = mouse_curve
-        db.benchmarks.insert_one(benchmark)
 
+        if not wrong_passwd:
+            db.benchmarks.insert_one(benchmark)
+        else:
+            anchor.warning("Wrong password")

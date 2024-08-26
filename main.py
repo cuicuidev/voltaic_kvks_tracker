@@ -26,6 +26,13 @@ def main() -> None:
     passwd = os.environ.get("MONGO_PASSWD")
     cluster = os.environ.get("MONGO_CLUSTER")
     code = os.environ.get("MONGO_CODE")
+
+    if any([user is None, passwd is None, cluster is None, code is None]):
+        user = st.secrets.get("MONGO_USER")
+        passwd = st.secrets.get("MONGO_PASSWD")
+        cluster = st.secrets.get("MONGO_CLUSTER")
+        code = st.secrets.get("MONGO_CODE")
+
     if any([user is None, passwd is None, cluster is None, code is None]):
         raise Exception("Error al cargar credenciales")
     uri = f"mongodb+srv://{user}:{passwd}@{cluster.lower()}.{code}.mongodb.net/?retryWrites=true&w=majority&appName={cluster}"

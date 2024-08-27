@@ -2,8 +2,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import streamlit as st
 
-import os
-from dotenv import load_dotenv
 from routes import tracking, progress
 
 class MongoDatabaseHandler:
@@ -21,20 +19,14 @@ def get_client(uri) -> MongoClient:
     return MongoClient(host=uri, server_api=ServerApi("1"))
 
 def main() -> None:
-    load_dotenv(".env")
-    user = os.environ.get("MONGO_USER")
-    passwd = os.environ.get("MONGO_PASSWD")
-    cluster = os.environ.get("MONGO_CLUSTER")
-    code = os.environ.get("MONGO_CODE")
+    user = st.secrets.get("MONGO_USER")
+    passwd = st.secrets.get("MONGO_PASSWD")
+    cluster = st.secrets.get("MONGO_CLUSTER")
+    code = st.secrets.get("MONGO_CODE")
 
     if any([user is None, passwd is None, cluster is None, code is None]):
-        user = st.secrets.get("MONGO_USER")
-        passwd = st.secrets.get("MONGO_PASSWD")
-        cluster = st.secrets.get("MONGO_CLUSTER")
-        code = st.secrets.get("MONGO_CODE")
+        raise Exception("a44: error de conexión a la base de datos.")
 
-    if any([user is None, passwd is None, cluster is None, code is None]):
-        raise Exception("Error al cargar credenciales")
     uri = f"mongodb+srv://{user}:{passwd}@{cluster.lower()}.{code}.mongodb.net/?retryWrites=true&w=majority&appName={cluster}"
     db = MongoDatabaseHandler(get_client(uri))
 

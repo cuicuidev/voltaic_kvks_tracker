@@ -3,7 +3,7 @@ import datetime
 import plotly.express as px
 import plotly.graph_objects as go
 
-from skills import Clicking, Tracking, Switching
+from skills import Benchmark, Scenarios
 
 def run(anchor, db) -> None:
     username = anchor.text_input(label="Username", key="username_2")
@@ -95,18 +95,34 @@ def time_series(df, skill) -> go.Figure:
     fig.update_layout(height=300)
     return fig
 
+def skill_progress(anchor, df, skill: Benchmark):
 
-def progress_dashboard(anchor, df) -> None:
-    c_tab, t_tab, s_tab = anchor.tabs(["Clicking".center(20,"\u2001"), "Tracking".center(20,"\u2001"), "Switching".center(20,"\u2001")])
     # Skills
-    clicking = Clicking()
-    clicking_latest = df[[col for col in df.columns if "clicking" in col]].dropna().iloc[-1]
-    clicking_best = df[[col for col in df.columns if "clicking" in col]].max(axis=0)
-    dyn_clicking_rank = clicking.dynamic_rank(scores=clicking_latest.iloc[:3].to_list())
-    stat_clicking_rank = clicking.static_rank(scores=clicking_latest.iloc[3:].to_list()) 
+    latest = df[[col for col in df.columns if skill.category in col]].dropna().iloc[-1]
+    best = df[[col for col in df.columns if skill.category in col]].max(axis=0)
+    ranks = {f"{skill.category} - {subcategory}" : skill.get_rank(scores=latest, subcategory=subcategory) for subcategory in skill.subcategories}
     clicking_fig = polar_plot(clicking_latest, clicking_best, clicking)
     clicking_prog = time_series(df[[col for col in df.columns if "clicking" in col] + ["submitted_at"]].dropna(), clicking)
 
+    stat1, stat2 = c_tab.columns(2)
+    stat1.write(f'Dynamic _**{' '.join(dyn_clicking_rank).strip()}**_')
+    stat2.write(f"Static _**{' '.join(stat_clicking_rank).strip()}**_")
+    c_tab.plotly_chart(clicking_fig)
+    c_tab.plotly_chart(clicking_prog)
+
+def progress_dashboard(anchor, df) -> None:
+    c_tab, t_tab, s_tab = anchor.tabs(["Clicking".center(20,"\u2001"), "Tracking".center(20,"\u2001"), "Switching".center(20,"\u2001")])
+    
+    skill = Benchmark("clicking", scenarios=[
+        Scenarios.PASU_EASY,
+        Scenarios.B180_EASY,
+        Scenarios.POPCORN_EASY,
+        Scenarios.WW3T,
+        Scenarios._1W4TS,
+        Scenarios._6SH
+    ])
+
+def meh():
     tracking = Tracking()
     tracking_latest = df[[col for col in df.columns if "tracking" in col]].dropna().iloc[-1]
     tracking_best = df[[col for col in df.columns if "tracking" in col]].max(axis=0)
@@ -123,11 +139,6 @@ def progress_dashboard(anchor, df) -> None:
     switching_fig = polar_plot(switching_latest, switching_best, switching)
     switching_prog = time_series(df[[col for col in df.columns if "switching" in col] + ["submitted_at"]].dropna(), switching)
 
-    stat1, stat2 = c_tab.columns(2)
-    stat1.write(f'Dynamic _**{' '.join(dyn_clicking_rank).strip()}**_')
-    stat2.write(f"Static _**{' '.join(stat_clicking_rank).strip()}**_")
-    c_tab.plotly_chart(clicking_fig)
-    c_tab.plotly_chart(clicking_prog)
     
     stat1, stat2 = t_tab.columns(2)
     stat1.write(f"Precise _**{' '.join(prec_tracking_rank).strip()}**_")

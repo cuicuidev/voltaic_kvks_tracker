@@ -10,13 +10,12 @@ def run(anchor, db) -> None:
     if username == "cuicui":
         passwd = anchor.text_input(label="Password", type="password")
         wrong_passwd = st.secrets["cuicui_passwd"] != passwd
-        print(passwd, st.secrets["cuicui_passwd"], wrong_passwd)
 
     if wrong_passwd:
-        anchor.warning("Wrong password")
+        anchor.warning("Invalid credentials")
 
-    level = anchor.selectbox(label="Difficuly", options=["Intermediate", "Advanced"])
-    diffs = {"Intermediate" : " Easy", "Advanced" : ""}
+    level = anchor.selectbox(label="Benchmark", options=["VT s3 Intermediate", "VT s3 Advanced"])
+    diffs = {"VT s3 Intermediate" : " Easy", "VT s3 Advanced" : ""}
     suffix = diffs[level]
 
     user = {
@@ -108,4 +107,4 @@ def run(anchor, db) -> None:
         if not wrong_passwd:
             db.benchmarks.insert_one(benchmark)
         else:
-            anchor.warning("Wrong password")
+            anchor.warning("Invalid credentials")
